@@ -1,0 +1,26 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <script type="text/javascript" src="StyleKitName.js"></script>
+  <script>
+    var offset = 0.0;
+    function draw() { 
+      StyleKitName.clearCanvas('gears');
+      StyleKitName.drawGears('gears', offset);
+    }
+    var tid = setInterval(loop, 25);
+    var canvas = document.getElementById("gears");
+    var context = canvas.getContext("2d");
+    function loop() {
+      offset += 1;
+      draw();
+    }
+  </script>
+</head>
+
+<body>
+  <canvas id="gears" width="240" height="220"></canvas>
+</body>
+
+</html>
