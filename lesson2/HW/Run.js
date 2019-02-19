@@ -48,7 +48,7 @@ function drawShape(x, y, angle, scaleX = 1, scaleY = 1) {
     ctx.lineTo(0, 0);
     ctx.fill();
     ctx.strokeStyle = "rgba(255, 255, 255, 1)";
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 5 ;
     ctx.strokeRect(0, 0, 200, 200);
     ctx.restore();
 }
