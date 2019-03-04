@@ -5,6 +5,11 @@ let level = 0;
 const size = 500;
 const halfSize = size / 2;
 const angle = degToRad(-90);
+let n = 100;
+let invert = false;
+let interval;
+let a;
+
 
 function init() {
     canvas = document.getElementById('canvas');
@@ -14,6 +19,7 @@ function init() {
             case 107:
                 if (level < 8) {
                     level++;
+                    invert = false;
                     clearCanvas();
                     render();
                 }
@@ -21,6 +27,7 @@ function init() {
             case 109:
                 if (level > 0) {
                     level--;
+                    invert = true;
                     clearCanvas();
                     render();
                 }
@@ -33,69 +40,81 @@ function init() {
     render();
 }
 
+function temp(step, i, test = false) {
+    let j = i / n;
+
+    if(test){
+        invert = false;
+    }
+
+    let scale = 1 - j / 2;
+    let scaleNeg = 1 - j / 2 * 3;
+    ctx.save();
+    ctx.save();
+    ctx.save();
+    ctx.save();
+
+    {
+        if (step + 1 === level || (step === level && a)) {
+            ctx.fillStyle = '#dddd55';
+        }
+        ctx.scale(scale, scale);
+        drawShape(step - invert?1:0);
+        ctx.restore();
+    }
+
+    {
+        if (step + 1 === level || (step === level && a)) {
+            ctx.fillStyle = '#55dd55';
+        }
+        ctx.translate(size / 2 * j, size / 2 * j);
+        ctx.scale(scale, scaleNeg);
+        drawShape(step - invert?1:0);
+        ctx.restore();
+    }
+
+    {
+        if (step + 1 === level || (step === level && a)) {
+            ctx.fillStyle = '#dd5555';
+        }
+        ctx.translate(halfSize * j, halfSize * j);
+        ctx.scale(scale, scaleNeg);
+        ctx.rotate(angle * j);
+        drawShape(step - invert?1:0);
+        ctx.restore();
+    }
+
+    {
+        ctx.translate(halfSize / 2 * j, halfSize / 2 * 3 * j);
+        let scale2 = 1 - j / 4 * 3;
+        ctx.scale(scale2, scale2);
+        ctx.rotate(angle * j);
+        drawShape(step - invert?1:0);
+        ctx.restore();
+    }
+}
+
 
 function drawShape(step) {
-    if (step > 0) {
-        step = step - 1;
+    if (step > 0 || invert) {
         let i = 1;
-        let n = 100;
-        let interval = setInterval(() => {
-            if (i <= n) {
-                let j = i / n;
-                console.log(j);
-                clearCanvas();
-
-                let scale = 1 - j / 2;
-                let scaleNeg = 1 - j / 2 * 3;
-                ctx.save();
-                ctx.save();
-                ctx.save();
-                ctx.save();
-
-                {
-                    if (step + 1 === level) {
-                        ctx.fillStyle = '#dddd55';
-                    }
-                    ctx.scale(scale, scale);
-                    drawShape(step);
-                    ctx.restore();
+        if (!invert) {
+            step--;
+        }
+        if ((step + 1 !== level && !invert) || (invert && step !== level)) {
+            temp(step , n);
+        } else {
+            a =invert;
+            interval = setInterval(() => {
+                if (i <= n) {
+                    clearCanvas();
+                    a ? temp(step, 100 - i, true) : temp(step, i);
+                } else {
+                    clearInterval(interval);
                 }
-
-                {
-                    if (step + 1 === level) {
-                        ctx.fillStyle = '#55dd55';
-                    }
-                    ctx.translate(size / 2 * j, size / 2 * j);
-                    ctx.scale(scale, scaleNeg);
-                    drawShape(step);
-                    ctx.restore();
-                }
-
-                {
-                    if (step + 1 === level) {
-                        ctx.fillStyle = '#dd5555';
-                    }
-                    ctx.translate(halfSize * j, halfSize * j);
-                    ctx.scale(scale, scaleNeg);
-                    ctx.rotate(angle * j);
-                    drawShape(step);
-                    ctx.restore();
-                }
-
-                {
-                    ctx.translate(halfSize / 3 * j, halfSize * 5 / 3 * j);
-                    let scale2 = 1 - j / 3 * 2;
-                    ctx.scale(scale2, scale2);
-                    ctx.rotate(angle * j);
-                    drawShape(step);
-                    ctx.restore();
-                }
-
-            } else {
-                clearInterval(interval);
-            }
-            i++;
-        }, 3000 / n);
+                i++;
+            }, 3000 / n);
+        }
     } else {
         drawT();
     }
@@ -114,7 +133,6 @@ function drawT() {
 }
 
 function render() {
-    console.log(level);
     drawShape(level);
 }
 
@@ -123,11 +141,13 @@ function degToRad(deg) {
 }
 
 function clearCanvas() {
-
-    ctx.fillStyle = 'rgb(255,255,255)';
-    ctx.rect(0, 0, canvas.width, canvas.height);
-    ctx.fill();
-    ctx.fillStyle = 'rgb(0,0,0)';
+    ctx.save();
+    // ctx.fillStyle = 'rgb(255,255,255)';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // ctx.rect(0,0, canvas.width, canvas.height);
+    // ctx.stroke();
+    // ctx.fill();
+    ctx.restore();
 }
 
 init();
