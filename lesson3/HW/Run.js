@@ -66,26 +66,20 @@ function drawShape(step) {
 }
 
 function drawT() {
-    ctx.translate(halfSize, halfSize);
+
     ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(halfSize, -halfSize);
-    ctx.lineTo(halfSize, halfSize);
-    ctx.lineTo(-halfSize, halfSize);
-
-    ctx.lineTo(-halfSize, -size / 3);
-    ctx.lineTo(size / 3, -size / 3);
-    ctx.lineTo(size / 3, -halfSize);
-
-    ctx.lineTo(halfSize, -halfSize);
+    ctx.moveTo(size, 0);
+    ctx.lineTo(size, size);
+    ctx.lineTo(0, size);
+    ctx.lineTo(0, 80);
+    ctx.lineTo(size - 80, 80);
+    ctx.lineTo(size - 80, 0);
     ctx.fill();
 }
 
 function render() {
     ctx.save();
     console.log(level);
-    ctx.translate(1, 1);
-    ctx.scale(1.5, 1.5);
     drawShape(level);
     ctx.restore();
 }
