@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Example 01.03 - Materials and light</title>
+    <script type="text/javascript" src="./libs/three.js"></script>
+    <script type="text/javascript" src="./libs/jquery-1.9.0.js"></script>
+    <script type="text/javascript" src="./libs/stats.js"></script>
+    <script type="text/javascript" src="./libs/dat.gui.js"></script>
+    <style>
+        body {
+            /* set margin to 0 and overflow to hidden, to go fullscreen */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Div which will hold the Output -->
+<div id="WebGL-output">
+</div>
+
+<!-- Javascript code that runs our Three.js examples -->
+<script type="text/javascript">
+    function degToRad(deg) {
+        return deg * (Math.PI / 180)
+    }
+
+    function getStep() {
+
+        var stepGeometry = new THREE.CubeGeometry(5, 1, 10);
+        var cylinderGeometry = new THREE.CylinderGeometry(2, 2, 2, 1000);
+        var cylinderGeometry2 = new THREE.CylinderGeometry(1.5, 1.5, 2, 1000);
+        var stepMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
+        var parent = new THREE.Object3D();
+        var cylinder2 = new THREE.Mesh(cylinderGeometry2, stepMaterial);
+        cylinder2.castShadow = true;
+        cylinder2.position.y = 1;
+        var cylinder = new THREE.Mesh(cylinderGeometry, stepMaterial);
+
+        cylinder.castShadow = true;
+        cylinder.position.y = 3;
+
+        var step = new THREE.Mesh(stepGeometry, stepMaterial);
+        step.castShadow = true;
+        step.position.x = 0;
+        step.position.y = 5;
+        step.position.z = 0;
+        //step.translateOnAxis(step.worldToLocal(new THREE.Vector3(-3,-1,-10)), 1);
+        // parent.rotation.y = degToRad(15 * i);
+        //x=x-3.5;
+        parent.add(cylinder);
+        parent.add(cylinder2);
+        parent.add(step);
+        return parent;
+    }
+
+    // once everything is loaded, we run our Three.js stuff.
+    $(
+        function () {
+
+            // create a scene, that will hold all our elements such as objects, cameras and lights.
+            var scene = new THREE.Scene();
+
+            // create a camera, which defines where we're looking at.
+            var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+            // create a render and set the size
+            var renderer = new THREE.WebGLRenderer();
+
+            renderer.setClearColorHex(0xEEEEEE, 1.0);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMapEnabled = true;
+
+            // create the ground plane
+            var planeGeometry = new THREE.PlaneGeometry(70, 30);
+            var planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff});
+            var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            plane.receiveShadow = true;
+
+            // rotate and position the plane
+            plane.rotation.x = -0.5 * Math.PI;
+            plane.position.x = 15;
+            plane.position.y = -0.9;
+            plane.position.z = 0;
+
+            // add the plane to the scene
+            scene.add(plane);
+
+            // create a cube
+            let n = 2;
+            for (var i = 0; i < n; i++) {
+                var step = getStep();
+                step.position.y = i*5;
+                step.position.x = i*2;
+                scene.add(step);
+            }
+
+            // position and point the camera to the center of the scene
+            camera.position.x = -35;
+            camera.position.y = 40;
+            camera.position.z = 30;
+            camera.lookAt(scene.position);
+            controls = new THREE.TrackballControls(camera);
+
+            // add spotlight for the shadows
+            var spotLight = new THREE.SpotLight(0xffffff);
+            spotLight.position.set(-50, 60, -30);
+            spotLight.castShadow = true;
+            scene.add(spotLight);
+
+            // add the output of the renderer to the html element
+            $("#WebGL-output").append(renderer.domElement);
+
+            // call the render function
+            renderer.render(scene, camera);
+        }
+    )
+    ;
+
+
+</script>
+</body>
+</html>
