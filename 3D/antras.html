@@ -45,9 +45,7 @@
 
         var step = new THREE.Mesh(stepGeometry, stepMaterial2);
         step.castShadow = true;
-        step.position.x = 0;
         step.position.y = 4;
-        step.position.z = 0;
 
         parent.add(cylinder);
         parent.add(cylinder2);
@@ -87,21 +85,34 @@
 
         // add the plane to the scene
         scene.add(plane);
-        let n = 10;
+
+        var connectorGeometry = new THREE.CubeGeometry(3, 2, 2);
+        let n = 15;
         let i = 0;
+        let angle = 15;
+        let x = 0;
+        let y = 0;
+        let z = 0;
         for (i = 0; i < n; i++) {
             var parent = new THREE.Object3D();
-            parent.rotation.y = degToRad(10 * i);
+            //parent.rotation.y = degToRad(angle * i);
             var step = getStep();
-            step.position.y = i * 4;
+            step.position.x = x;
+            step.position.y = y;
+            step.position.z = z;
 
-            step.position.x = i * 4;
-            var connectorGeometry = new THREE.CubeGeometry(3, 2, 2);
             var connector = new THREE.Mesh(connectorGeometry, stepMaterial);
-            connector.position.x = -1 + i*4;
-            connector.position.y = -1 + i*4;
+            connector.position.x = x + 3;
+            connector.position.y = y + 3;
+            connector.position.z = z;
 
-            //connector.rotation.y = degToRad(10 * i);
+            parent.rotation.y = (degToRad(angle * i));
+            let a = 4;
+            let b = i+1;
+            x += a * Math.cos(degToRad(angle * b));
+            z += a * Math.sin(degToRad(angle * b));
+            y += 4;
+            //  z += 6;
 
             parent.add(connector);
             parent.add(step);
