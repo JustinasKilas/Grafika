@@ -8,6 +8,7 @@ const angle = degToRad(-90);
 let n = 100;
 let invert = false;
 let interval;
+let a;
 
 
 function init() {
@@ -39,9 +40,12 @@ function init() {
     render();
 }
 
-function temp(step, i) {
+function temp(step, i, test = false) {
     let j = i / n;
 
+    if(test){
+        invert = false;
+    }
 
     let scale = 1 - j / 2;
     let scaleNeg = 1 - j / 2 * 3;
@@ -51,32 +55,32 @@ function temp(step, i) {
     ctx.save();
 
     {
-        if (step + 1 === level) {
+        if (step + 1 === level || (step === level && a)) {
             ctx.fillStyle = '#dddd55';
         }
         ctx.scale(scale, scale);
-        drawShape(step);
+        drawShape(step - invert?1:0);
         ctx.restore();
     }
 
     {
-        if (step + 1 === level) {
+        if (step + 1 === level || (step === level && a)) {
             ctx.fillStyle = '#55dd55';
         }
         ctx.translate(size / 2 * j, size / 2 * j);
         ctx.scale(scale, scaleNeg);
-        drawShape(step);
+        drawShape(step - invert?1:0);
         ctx.restore();
     }
 
     {
-        if (step + 1 === level) {
+        if (step + 1 === level || (step === level && a)) {
             ctx.fillStyle = '#dd5555';
         }
         ctx.translate(halfSize * j, halfSize * j);
         ctx.scale(scale, scaleNeg);
         ctx.rotate(angle * j);
-        drawShape(step);
+        drawShape(step - invert?1:0);
         ctx.restore();
     }
 
@@ -85,74 +89,26 @@ function temp(step, i) {
         let scale2 = 1 - j / 4 * 3;
         ctx.scale(scale2, scale2);
         ctx.rotate(angle * j);
-        drawShape(step);
+        drawShape(step - invert?1:0);
         ctx.restore();
     }
 }
 
-function temp2(step, i) {   //i = 0     i=100
-    i = 100 - i;           //100       0
-    let j = i / n;          //1         0
-
-
-    let scale = 1 - j / 2;
-    let scaleNeg = 1 - j / 2 * 3;
-    ctx.save();
-    ctx.save();
-    ctx.save();
-    ctx.save();
-
-    {
-        if (step + 1 === level) {
-            ctx.fillStyle = '#dddd55';
-        }
-        ctx.scale(scale, scale);
-        drawShape(step);
-        ctx.restore();
-    }
-
-    {
-        if (step + 1 === level) {
-            ctx.fillStyle = '#55dd55';
-        }
-        ctx.translate(size / 2 * j, size / 2 * j);
-        ctx.scale(scale, scaleNeg);
-        drawShape(step);
-        ctx.restore();
-    }
-
-    {
-        if (step + 1 === level) {
-            ctx.fillStyle = '#dd5555';
-        }
-        ctx.translate(halfSize * j, halfSize * j);
-        ctx.scale(scale, scaleNeg);
-        ctx.rotate(angle * j);
-        drawShape(step);
-        ctx.restore();
-    }
-
-    {
-        ctx.translate(halfSize / 2 * j, halfSize / 2 * 3 * j);
-        let scale2 = 1 - j / 4 * 3;
-        ctx.scale(scale2, scale2);
-        ctx.rotate(angle * j);
-        drawShape(step);
-        ctx.restore();
-    }
-}
 
 function drawShape(step) {
-    if (step > 0) {
-        step --;
+    if (step > 0 || invert) {
         let i = 1;
-        if ((step + 1 !== level && !invert) || (invert && step === level)) {
-            temp(step, n);
+        if (!invert) {
+            step--;
+        }
+        if ((step + 1 !== level && !invert) || (invert && step !== level)) {
+            temp(step , n);
         } else {
+            a =invert;
             interval = setInterval(() => {
                 if (i <= n) {
                     clearCanvas();
-                    invert?temp2(step,i):temp(step, i);
+                    a ? temp(step, 100 - i, true) : temp(step, i);
                 } else {
                     clearInterval(interval);
                 }
@@ -177,11 +133,7 @@ function drawT() {
 }
 
 function render() {
-    if (invert) {
-        drawShape(level + 1)
-    } else {
-        drawShape(level);
-    }
+    drawShape(level);
 }
 
 function degToRad(deg) {
